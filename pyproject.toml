@@ -1,0 +1,32 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "Smn"
+version = "0.0.1"
+description = "Case Study: Eniac\u2019s Discount Strategy          You will keep working for Eniac -the e-commerce tech company- as a Data Analyst. This time you will work with internal data, which is not anonymised\u2026 but a bit more chaotic! The company has high hopes put into the possibilities that come with Data Analysis, and they are especially hopeful that your work can finally settle an ongoing debate: whether or not it\u2019s beneficial to discount "
+authors = [
+  { name = "Smn" },
+]
+license = { file = "LICENSE" }
+readme = "README.md"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License"
+]
+requires-python = "~=3.10.0"
+
+
+[tool.ruff]
+line-length = 99
+src = ["Smn"]
+include = ["pyproject.toml", "Smn/**/*.py"]
+
+[tool.ruff.lint]
+extend-select = ["I"]  # Add import sorting
+
+[tool.ruff.lint.isort]
+known-first-party = ["Smn"]
+force-sort-within-sections = true
+
