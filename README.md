@@ -1,8 +1,6 @@
 # Eniac - Data Cleaning and Storytelling
 
-<a target="_blank" href="https://cookiecutter-data-science.drivendata.org/">
-    <img src="https://img.shields.io/badge/CCDS-Project%20template-328F97?logo=cookiecutter" />
-</a>
+*My first ever project using git and github and the ccds template*
 
 ## Case Study: Eniac's Discount Strategy
 
@@ -10,7 +8,11 @@ You will keep working for Eniac -the e-commerce tech company- as a Data Analyst.
 
 ## Reproducing the project
 
-The project pipeline can either be run using make, or manually. To get a full list of make commands you can use $ make
+The project pipeline can either be run using make, or manually. To get a full list of make commands you can use:
+
+```bash
+$ make
+```
 
 **Using Make:**
 ```bash
@@ -38,7 +40,7 @@ $ python -m Smn.plots
 │   ├── processed      <- The final, canonical data sets for modeling.
 │   └── raw            <- The original, immutable data dump.
 │
-├── notebooks          <- Jupyter notebooks.
+├── notebooks          <- Jupyter notebooks. Used for code elabortion, but not part of the final code
 │
 ├── pyproject.toml     <- Project configuration file with package metadata for 
 │                         Smn and configuration for tools like black
