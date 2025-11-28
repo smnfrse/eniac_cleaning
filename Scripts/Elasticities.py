@@ -19,7 +19,7 @@ def _resample_nlog(df, freq='d', date_col='date', discount_col='discount', sales
     resample_df = (df.resample(freq, on=date_col)
                      .agg(sales=(sales_col, 'sum'), 
                           price=('unit_price', 'mean'), 
-                          discount=(discount_col, 'mean'))
+                          discount=(discount_col, 'sum'))
                     #.reset_index()
                     )
     resample_df['log_sales'] = np.log(resample_df['sales'] + 1) 
@@ -33,7 +33,7 @@ def _group_nlog (df: pd.DataFrame, group_col: str, freq='d', date_col='date', di
 
 #Calculate the elasticities accross the groups
 def _elasticity_calc(df, group_col):
-    elasticities_df = pd.DataFrame(columns=[group_col, 'Elasticity', 'P_value', 'Revenue', 'Sales', 'Average_Price'])
+    elasticities_df = pd.DataFrame(columns=[group_col, 'Elasticity', 'P_value', 'Revenue', 'Sales', 'Average_Price', 'Total_Discount'])
     df['revenue'] = df.price * df.sales
     for i in df[group_col].unique():
         subset = df[df[group_col] == i].dropna()
@@ -45,7 +45,8 @@ def _elasticity_calc(df, group_col):
         revenue = subset.revenue.sum()
         sales = subset.sales.sum()
         mn_price = revenue/sales
-        elasticities_df.loc[len(elasticities_df)] = [i, model.params.log_discount, model.pvalues.log_discount, revenue, sales, mn_price]
+        discount = subset.discount.sum()
+        elasticities_df.loc[len(elasticities_df)] = [i, model.params.log_discount, model.pvalues.log_discount, revenue, sales, mn_price, discount]
     return elasticities_df
 
 

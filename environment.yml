@@ -2,7 +2,7 @@ name: eniac_cleaning
 channels:
   - conda-forge
 dependencies:
-  - python=3.10
+  - python=3.13.5
   - pip
   - typer
   - loguru
@@ -14,6 +14,9 @@ dependencies:
   - numpy
   - pandas
   - scikit-learn
+  - scipy
+  - statsmodels
+  - seaborn
   - ruff
   - pytest
   - pip:

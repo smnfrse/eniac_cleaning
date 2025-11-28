@@ -9,13 +9,13 @@ description = "Case Study: Eniac\u2019s Discount Strategy          You will keep
 authors = [
   { name = "Smn" },
 ]
-license = { file = "LICENSE" }
+#license = { file = "LICENSE" }
 readme = "README.md"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License"
 ]
-requires-python = "~=3.10.0"
+requires-python = ">=3.10.0"
 
 
 [tool.ruff]
