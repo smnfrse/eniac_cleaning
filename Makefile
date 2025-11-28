@@ -17,13 +17,6 @@ requirements:
 	pip install -e .
 
 
-## Delete all compiled Python files
-.PHONY: clean
-clean:
-	find . -type f -name "*.py[co]" -delete
-	find . -type d -name "__pycache__" -delete
-
-
 ## Lint using ruff (use `make format` to do formatting)
 .PHONY: lint
 lint:
@@ -46,7 +39,7 @@ create_environment:
 
 ## Update environment from environment.yml
 .PHONY: update_environment
-update-environment:
+update_environment:
 	conda env update -f environment.yml --prune
 	@echo ">>> conda environment updated"
 
@@ -58,13 +51,13 @@ update-environment:
 
 ## Run data cleaning script
 .PHONY: data_cleaning
-data-cleaning: requirements
+data_cleaning: requirements
 	$(PYTHON_INTERPRETER) -m Smn.data_cleaning
 
 
 ## Run data quality checks
 .PHONY: data_quality
-data-quality: requirements
+data_quality: requirements
 	$(PYTHON_INTERPRETER) -m Smn.data_quality
 
 
@@ -76,28 +69,35 @@ plots: requirements
 
 ## Run complete data pipeline (cleaning -> quality -> plots)
 .PHONY: pipeline
-pipeline: data-cleaning data-quality plots
+pipeline: data_cleaning data_quality plots
 	@echo ">>> Complete data pipeline finished"
 
 
 ## Run data processing only (cleaning -> quality)
 .PHONY: data
-data: data-cleaning data-quality
+data: data_cleaning data_quality
 	@echo ">>> Data processing finished"
+
+
+## Delete all compiled Python files
+.PHONY: clean
+clean:
+	$(PYTHON_INTERPRETER) -c "import pathlib; [f.unlink() for f in pathlib.Path('.').rglob('*.py[co]') if f.is_file()]"
+	$(PYTHON_INTERPRETER) -c "import pathlib, shutil; [shutil.rmtree(d) for d in pathlib.Path('.').rglob('__pycache__') if d.is_dir()]"
+	@echo ">>> Compiled python files cleaned"
 
 
 ## Clean generated data and figures
 .PHONY: clean_outputs
-clean-outputs:
-	rm -rf data/interim/*
-	rm -rf data/processed/*
-	rm -rf reports/figures/*
+clean_outputs:
+	$(PYTHON_INTERPRETER) -c "import shutil, os; paths = ['data/interim', 'data/processed', 'figures']; [shutil.rmtree(p) if os.path.exists(p) else None for p in paths]"
+	$(PYTHON_INTERPRETER) -c "import os; paths = ['data/interim', 'data/processed', 'figures']; [os.makedirs(p, exist_ok=True) for p in paths]"
 	@echo ">>> Generated outputs cleaned"
 
 
 ## Full clean (including Python cache and outputs)
 .PHONY: clean_all
-clean-all: clean clean-outputs
+clean_all: clean clean_outputs
 	@echo ">>> Full clean completed"
 
 

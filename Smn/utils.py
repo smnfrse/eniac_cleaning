@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import statsmodels.api as sm
-import linearmodels as lm 
+#import linearmodels as lm 
 import seaborn as sns
 import matplotlib.pyplot as plt
 from scipy import stats
@@ -9,8 +9,8 @@ from scipy import stats
 # Function that can remove the first decimal from a number (formatted as a string), when there are two
 def clean_double_decimal(df: pd.DataFrame, cols: list):
     for col in cols:
-        mask = df[col].str.count('\.') > 1
-        df.loc[mask, col] = df.loc[mask, col].str.replace('\.', '', n=1, regex=True)
+        mask = df[col].str.count(r'\.') > 1
+        df.loc[mask, col] = df.loc[mask, col].str.replace(r'\.', '', n=1, regex=True)
     return df
 
 #see doc string
@@ -31,7 +31,8 @@ def _resample_nlog(df, freq='d', date_col='date', discount_col='discount', sales
     resample_df = (df.resample(freq, on=date_col)
                      .agg(sales=(sales_col, 'sum'), 
                           price=('unit_price', 'mean'), 
-                          discount=(discount_col, 'mean'))
+                          discount=(discount_col, 'mean'),
+                          include_groups=False)
                     #.reset_index()
                     )
     resample_df['log_sales'] = np.log(resample_df['sales'] + 1) 
@@ -78,14 +79,14 @@ def resample_nlog(df, freq='d'):
     resample_df['log_discount'] = np.log(resample_df['discount'] + 1)
     return(resample_df)
 
-#Conducts a fixed effects regression
-def fixed_reg(df):
-    model = lm.PanelOLS.from_formula(
-    'log_sales ~ log_discount + EntityEffects', 
-    data=df
-    )
-    results = model.fit()
-    return results
+# #Conducts a fixed effects regression
+# def fixed_reg(df):
+#     model = lm.PanelOLS.from_formula(
+#     'log_sales ~ log_discount + EntityEffects', 
+#     data=df
+#     )
+#     results = model.fit()
+#     return results
 
 #Formats a scatter plot showing the relationship between discounts and sales
 def plot_nformat(df, save_path=None):
