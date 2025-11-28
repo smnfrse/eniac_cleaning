@@ -1,15 +1,15 @@
 """
-A python script for cleaning the data, it is based on the data_cleaning script in the scripts folder conmverted 
+A python script for cleaning the data, it is based on the data_cleaning script in the scripts folder conmverted
 into the CCDS data structure
 """
+
 from pathlib import Path
 
-import pandas as pd
 from loguru import logger
-from tqdm import tqdm
+import pandas as pd
 import typer
 
-from Smn.config import RAW_DATA_DIR, INTERIM_DATA_DIR
+from Smn.config import INTERIM_DATA_DIR, RAW_DATA_DIR
 from Smn.utils import clean_double_decimal
 
 app = typer.Typer()
@@ -22,17 +22,16 @@ def main(
     orderlines_input: Path = RAW_DATA_DIR / "orderlines.csv",
     brands_input: Path = RAW_DATA_DIR / "brands.csv",
     products_input: Path = RAW_DATA_DIR / "products.csv",
-    
-    # Output files - using CCDS path structure  
+    # Output files - using CCDS path structure
     brands_output: Path = INTERIM_DATA_DIR / "brands_cl.csv",
     orders_output: Path = INTERIM_DATA_DIR / "orders_cl.csv",
     orderlines_output: Path = INTERIM_DATA_DIR / "orderlines_cl.csv",
     products_output: Path = INTERIM_DATA_DIR / "products_cl.csv",
 ):
     """Clean and process orders, orderlines, brands, and products data."""
-    
+
     logger.info("Starting data cleaning process...")
-    
+
     # Read in the raw data using CCDS paths
     logger.info("Reading raw data files...")
     orders_raw = pd.read_csv(orders_input)
@@ -63,13 +62,13 @@ def main(
     orderlines = orderlines_raw.copy().convert_dtypes()
     orderlines["date"] = pd.to_datetime(orderlines["date"])
     # Remove double decimals from orderlines unit price
-    orderlines = clean_double_decimal(orderlines, ['unit_price'])
+    orderlines = clean_double_decimal(orderlines, ["unit_price"])
     # Convert unit price to numeric
     orderlines["unit_price"] = pd.to_numeric(orderlines["unit_price"])
     # Remove the useless product_id column
-    orderlines.drop('product_id', axis=1, inplace=True)
+    orderlines.drop("product_id", axis=1, inplace=True)
     # Rename order_id for better merging
-    orderlines.rename({'id_order': 'order_id'}, inplace=True, axis=1)
+    orderlines.rename({"id_order": "order_id"}, inplace=True, axis=1)
     # Save the cleaned data to a csv file using CCDS path
     orderlines.to_csv(orderlines_output, index=False)
     logger.success(f"Orderlines data saved to {orderlines_output}")
@@ -79,23 +78,23 @@ def main(
     # Drop duplicates from the products table and autoupdate data types
     products = products_raw.copy().drop_duplicates().convert_dtypes()
     # Drop missing values from the price column (but not missing descriptions or types)
-    products.dropna(subset='price', inplace=True)
+    products.dropna(subset="price", inplace=True)
     # drop promo price
-    products.drop('promo_price', axis=1, inplace=True)
+    products.drop("promo_price", axis=1, inplace=True)
     # Run custom function
-    products = clean_double_decimal(products, ['price'])
+    products = clean_double_decimal(products, ["price"])
     # Remove questionable lines with three decimals after the point
-    products = products[~(products.price.astype(str).str.contains(r'\.\d{3}$'))]
+    products = products[~(products.price.astype(str).str.contains(r"\.\d{3}$"))]
     # Change the price to numeric
-    products[['price']] = products[['price']].astype(float)
+    products[["price"]] = products[["price"]].astype(float)
 
     ### Add number of times each product has been sold from the orderlines table to product table
-    prod_times_sold = orderlines.groupby('sku', as_index=False).agg(times_sold=('sku', 'size'))
-    products = products.merge(prod_times_sold, on='sku', how='left')
+    prod_times_sold = orderlines.groupby("sku", as_index=False).agg(times_sold=("sku", "size"))
+    products = products.merge(prod_times_sold, on="sku", how="left")
 
     products.to_csv(products_output, index=False)
     logger.success(f"Products data saved to {products_output}")
-    
+
     logger.success("Data cleaning completed successfully!")
 
 
