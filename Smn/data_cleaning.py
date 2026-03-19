@@ -1,7 +1,4 @@
-"""
-A python script for cleaning the data, it is based on the data_cleaning script in the scripts folder conmverted
-into the CCDS data structure
-"""
+"""Clean raw data tables (orders, orderlines, brands, products) and output to data/interim."""
 
 from pathlib import Path
 
